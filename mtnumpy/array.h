@@ -190,7 +190,7 @@ template <typename T>
 struct Product { T operator()(T a, T b) { return a * b; } };
 
 template<typename T>
-PyObject*
+static PyObject*
 array_agg_helper(ArrayObject* self, PyObject* other, double init, 
                  std::function<PyObject*(T)> c_to_py,
                  std::function<T(T, T)> Op)
