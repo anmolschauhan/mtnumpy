@@ -183,10 +183,6 @@ static PyTypeObject CustomType = {
     Custom_new,                                         /* tp_new */
 };
 
-
-template <typename T>
-T func(T a, T b) { return a + b; }
-
 template <typename T>
 struct Add { T operator()(T a, T b) { return a + b; } };
 
