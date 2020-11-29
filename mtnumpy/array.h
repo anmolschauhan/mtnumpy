@@ -126,11 +126,17 @@ Array_sum(ArrayObject* self, PyObject* args);
 static PyObject*
 Array_product(ArrayObject* self, PyObject* args);
 
+static PyObject*
+Array_print(ArrayObject* self);
+
 static PyMethodDef Custom_methods[] = {
     {"sum", (PyCFunction)Array_sum, METH_VARARGS,
      "Return the sum of array"
     },   
     {"product", (PyCFunction)Array_product, METH_VARARGS,
+     "Return the sum of array"
+    },
+    {"print", (PyCFunction)Array_print, METH_NOARGS,
      "Return the sum of array"
     },
     {NULL}  /* Sentinel */
@@ -212,8 +218,13 @@ array_agg_helper(ArrayObject* self, PyObject* other, double init,
     }
     else if ((PyTypeObject*)other->ob_type == &CustomType)
     {
-        // add code to make it return ArrayObject
-        return Py_None;
+        ArrayObject* tmp = (ArrayObject*)Custom_new(&CustomType, NULL, NULL);
+        tmp->array = (T*)malloc(self->size * sizeof(T));
+        tmp->size = self->size;
+        tmp->dtype = self->dtype;
+        ArrayObject* _other = (ArrayObject*)other;
+        mtagg_helper1<T>((T*)tmp->array, (T*)self->array, (T*)_other->array, self->size, 24, Op);
+        return (PyObject*)tmp;
     }
     return Py_None;
 }
@@ -265,4 +276,14 @@ Array_product(ArrayObject* self, PyObject* args)
     PyObject* other = NULL;
     PyArg_ParseTuple(args, "|O", &other);
     return Array_agg<Product>(self, other, 1);
+}
+
+static PyObject*
+Array_print(ArrayObject* self)
+{
+    double* arr = (double*)self->array;
+    for (int i = 0; i < 5; i++)
+        std::cout <<arr[i] << " ";
+    std::cout << std::endl;
+    return Py_None;
 }

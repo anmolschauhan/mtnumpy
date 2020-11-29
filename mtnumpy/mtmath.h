@@ -21,6 +21,12 @@ template<typename T>
 void mtagg_helper(T* res, T* arr, long long size, T other, int num_threads, std::function<T(T, T)> Op);
 
 template<typename T>
+void agg_helper_self_and_other(T* res, T* arr1, T* arr2, long long size, long start, long end, std::function<T(T, T)> Op);
+
+template<typename T>
+void mtagg_helper1(T* res, T* arr1, T* arr2, long long size, int num_threads, std::function<T(T, T)> Op);
+
+template<typename T>
 int random_helper(T* arr, long long size, long start, long end);
 
 template<typename T>

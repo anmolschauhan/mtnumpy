@@ -70,6 +70,39 @@ void mtagg_helper(T* res, T* arr, long long size, T other, int num_threads, std:
 }
 
 template<typename T>
+void agg_helper_self_and_other(T* res, T* arr1, T* arr2, long long size, long start, long end, std::function<T(T, T)> Op)
+{
+    if (end > size)
+        end = size;
+    while (start < end)
+    {
+        res[start] = Op(arr1[start], arr2[start]);
+        start++;
+    }
+}
+
+template<typename T>
+void mtagg_helper1(T* res, T* arr1, T* arr2, long long size, int num_threads, std::function<T(T, T)> Op)
+{
+    auto st = std::chrono::high_resolution_clock::now();
+    std::vector<std::future<void>> results;
+    long size_per_thread = (long)ceil((double)size / (double)num_threads);
+    long start = 0, end = size_per_thread;
+    while (start < size)
+    {
+        results.push_back(std::async(std::launch::async, agg_helper_self_and_other<T>, std::ref(res), std::ref(arr1), std::ref(arr2), size, start, end, Op));
+        start += size_per_thread;
+        end += size_per_thread;
+    }
+    for (auto& i : results)
+    {
+        i.get();
+    }
+    auto en = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(en - st);
+}
+
+template<typename T>
 int random_helper(T* arr, long long size, long start, long end)
 {
     T lower_bound = 0;
